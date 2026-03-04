@@ -21,12 +21,9 @@ import {
   EdcConnectorClientError,
   EdcConnectorClientErrorType,
   IdResponse,
-  PolicyBuilder,
-  PolicyInput,
 } from '@think-it-labs/edc-connector-client';
 import { Policy } from '@think-it-labs/edc-connector-client/dist/src/entities/policy';
 import { ContractNegotiationRequest } from '@think-it-labs/edc-connector-client/dist/src/entities';
-import { PolicyType } from '@think-it-labs/edc-connector-client/dist/src/entities/policy/policy';
 import { CatalogDataset } from './catalog-dataset';
 import { CatalogRequest } from '@think-it-labs/edc-connector-client/dist/src/entities/catalog';
 
@@ -150,18 +147,28 @@ export class CatalogService {
    */
   private getOfferMap(participantId: string, dataset: Dataset) {
     const offerMap = new Map<string, Policy>();
-    const policyType: PolicyType = 'Offer';
 
     dataset.offers.forEach((offer, index) => {
-      const policyInput: PolicyInput = {
-        '@type': policyType,
-        assigner: participantId,
-        target: dataset.id,
-        profiles: [],
-      };
-      const policy: Policy = new PolicyBuilder().raw(policyInput).raw(offer).build();
+      // Keep offer policy as-is, but ensure mandatory fields exist for management API validation.
+      const policy = { ...(offer as Record<string, unknown>) } as Policy & Record<string, unknown>;
+
+      policy['@context'] = policy['@context'] ?? 'http://www.w3.org/ns/odrl.jsonld';
+
+      if (!this.hasPolicyProperty(policy, 'assigner')) {
+        policy['assigner'] = participantId;
+      }
+
+      if (!this.hasPolicyProperty(policy, 'target')) {
+        policy['target'] = dataset.id;
+      }
+
       offerMap.set(String(index + 1), policy);
     });
     return offerMap;
+  }
+
+  private hasPolicyProperty(policy: Record<string, unknown>, name: 'assigner' | 'target'): boolean {
+    const expandedName = `http://www.w3.org/ns/odrl/2/${name}`;
+    return policy[name] != null || policy[expandedName] != null;
   }
 }

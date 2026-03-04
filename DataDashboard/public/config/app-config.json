@@ -9,6 +9,18 @@
       "divider": true
     },
     {
+      "text": "ML Assets",
+      "materialSymbol": "deployed_code_update",
+      "routerPath": "ml-assets",
+      "viewDescription": "Browse local and external ML assets with server-side filtering support. External assets can be negotiated directly from this view."
+    },
+    {
+      "text": "Model Execution",
+      "materialSymbol": "smart_toy",
+      "routerPath": "model-execution",
+      "viewDescription": "Run inference requests against executable assets through the infer extension endpoint."
+    },
+    {
       "text": "Catalog",
       "materialSymbol": "book_ribbon",
       "routerPath": "catalog",

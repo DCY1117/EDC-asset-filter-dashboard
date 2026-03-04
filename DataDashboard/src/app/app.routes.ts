@@ -25,6 +25,16 @@ export const routes: Routes = [
     loadComponent: () => import('@eclipse-edc/dashboard-core/home').then(m => m.HomeViewComponent),
   },
   {
+    path: 'ml-assets',
+    loadComponent: () =>
+      import('./features/ml-assets-browser/ml-assets-browser.component').then(m => m.MlAssetsBrowserComponent),
+  },
+  {
+    path: 'model-execution',
+    loadComponent: () =>
+      import('./features/model-execution/model-execution.component').then(m => m.ModelExecutionComponent),
+  },
+  {
     path: 'assets',
     loadComponent: () => import('@eclipse-edc/dashboard-core/assets').then(m => m.AssetViewComponent),
   },
